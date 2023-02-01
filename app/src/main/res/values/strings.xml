@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">KotlinLogin</string>
+    <string name="todo">TODO</string>
+    <string name="open"> Open Navigation Drawer</string>
+    <string name="close"> Close Navigation Drawer</string>
+    <string name="put_text_here">Put text here</string>
+</resources>
