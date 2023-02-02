@@ -58,7 +58,7 @@ class DirectoryActivity : AppCompatActivity()
             true
         } // End navView.setNavigationItemSelectedListener
         
-    } // End onCreate method
+    } // End onCreate
     
     // Override function to implement item click listener callback to open
     // and close the navigation drawer when the icon is clicked
@@ -71,5 +71,3 @@ class DirectoryActivity : AppCompatActivity()
         else super.onOptionsItemSelected(item)
     } // End onOptionsItemSelected
 } // End DirectoryActivity class
-
-
