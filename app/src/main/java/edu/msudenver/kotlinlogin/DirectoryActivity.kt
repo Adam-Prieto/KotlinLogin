@@ -22,17 +22,18 @@ class DirectoryActivity : AppCompatActivity()
         
         // Intents
         val intentLogOut = Intent(this, MainActivity::class.java)
-    
+        val intentHomeScreen = Intent(this, DirectoryActivity::class.java)
+        
         // Variables to locate and toggle drawer
         drawerLayout = findViewById(R.id.my_drawer_layout)
         actionBarDrawerToggle =
             ActionBarDrawerToggle(this, drawerLayout, R.string.open,
                 R.string.close)
-    
+        
         // Pass Open and Close toggle for drawer layout listener
         drawerLayout.addDrawerListener(actionBarDrawerToggle)
         actionBarDrawerToggle.syncState()
-    
+        
         // Make Navigation drawer icon always appear on action bar
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         
@@ -41,12 +42,25 @@ class DirectoryActivity : AppCompatActivity()
         navView.setNavigationItemSelectedListener {
             when (it.itemId)
             {
-                R.id.nav_account -> Toast.makeText(this, "Account",
-                    Toast.LENGTH_SHORT).show()
+                // Home Screen
+                R.id.nav_home ->
+                {
+                    startActivity(intentHomeScreen)
+                } // End R.id.nav_home
                 
-                R.id.nav_settings -> Toast.makeText(this, "Settings",
-                    Toast.LENGTH_SHORT).show()
+                // Account Page
+                R.id.nav_account ->
+                {
+                    Toast.makeText(this, "Account", Toast.LENGTH_SHORT).show()
+                } // End R.id.nav_account
                 
+                // Settings
+                R.id.nav_settings ->
+                {
+                    Toast.makeText(this, "Settings", Toast.LENGTH_SHORT).show()
+                } // End R.id.nav_settings
+                
+                // Log out
                 R.id.nav_logout ->
                 {
                     startActivity(intentLogOut)
@@ -57,7 +71,6 @@ class DirectoryActivity : AppCompatActivity()
             } // End when
             true
         } // End navView.setNavigationItemSelectedListener
-        
     } // End onCreate
     
     // Override function to implement item click listener callback to open
