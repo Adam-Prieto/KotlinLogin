@@ -7,6 +7,7 @@
 
 package edu.msudenver.kotlinlogin
 
+import android.annotation.SuppressLint
 import android.content.*
 import android.database.Cursor
 import android.database.sqlite.*
@@ -42,6 +43,8 @@ class DataBaseHelper(context: Context) :
         } // End getHash
     } // End companion object
     
+    var companion = Companion
+    
     //************************************************************************
     /**@methodName: onCreate
      * @param: db (a sqlite database)
@@ -67,7 +70,8 @@ class DataBaseHelper(context: Context) :
      * @description: This is called when the version number changes. It prevents
      * previous user apps from breaking when you change the data base design.
      * */
-    override fun onUpgrade(oldDB: SQLiteDatabase?, oldVersion: Int, newVersion: Int)
+    override fun onUpgrade(oldDB: SQLiteDatabase?, oldVersion: Int,
+                           newVersion: Int)
     {
         // Drop table...
         oldDB?.execSQL("""
@@ -94,6 +98,9 @@ class DataBaseHelper(context: Context) :
         cv.put("column_Username", userModel.username)
         cv.put("column_Password", userModel.password)
         val insert = db.insert("USER_DATABASE", null, cv)
+    
+        // Close variable
+        db.close()
         
         // Return stuff
         if (insert.equals(-1)) return false
@@ -128,7 +135,8 @@ class DataBaseHelper(context: Context) :
                 val newUser = UserModel(email, userName, password)
                 
                 returnList.add(newUser)
-            } while (cursor.moveToNext()) // End do while
+            } // End do
+            while (cursor.moveToNext()) // End do while
         } // End if
         
         
@@ -147,7 +155,7 @@ class DataBaseHelper(context: Context) :
      * @description: This method returns all database users and their
      * respective information.
      * */
-    fun viewEntry():ArrayList<UserModel>
+    fun viewEntry(): ArrayList<UserModel>
     {
         val userList: ArrayList<UserModel> = ArrayList()
         val selectQuery = "SELECT * FROM USER_DATABASE"
@@ -158,12 +166,12 @@ class DataBaseHelper(context: Context) :
         try
         {
             cursor = db.rawQuery(selectQuery, null)
-        }
+        } // End try
         catch (e: SQLiteException)
         {
             db.execSQL(selectQuery)
             return ArrayList()
-        }
+        } // End catch
         
         // Necessary variables
         var email: String
@@ -179,47 +187,77 @@ class DataBaseHelper(context: Context) :
                 password = cursor.getString(2)
                 val user = UserModel(email, userName, password)
                 userList.add(user)
-            }while (cursor.moveToNext()) // End do while
+            } // End do
+            while (cursor.moveToNext()) // End do while
         } // End if
-    
+        
+        // Close variables
+        db.close()
         cursor.close()
+        
+        // Return statement
         return userList
     } // End viewEntry
     
-
-    
-    // Todo: write getPassword method that does a query of data, finds a row w/
-    //  an email, and returns the password.
-    fun getPassword(user: UserModel): String
+    //****************************************************************************
+    /**@methodName: checkUsername
+     * @param: userName: String
+     * @return: Boolean
+     * @description: This method returns a boolean based on whether a user name
+     * is found in the database.
+     * */
+    @SuppressLint("Recycle")
+    fun checkUsername(userName: String): Boolean
     {
-        val db:SQLiteDatabase = this.writableDatabase
-        val queryString = "SELECT column_Password FROM USER_DATABASE WHERE column_Username = $user.username"
-        val cursor = db.rawQuery(queryString, null)
+        // Variable initialization and query statement
+        val myDB = this.writableDatabase
+        val selectQuery =
+            "SELECT * FROM USER_DATABASE WHERE column_Username = ?"
+        val cursor = myDB.rawQuery(selectQuery, arrayOf(userName))
         
-        
-        cursor.close()
-        return cursor.getString(3)
-    }
+        // Return Statement
+        return (cursor.count > 0)
+    } // End checkUsername
     
-    
-    
-    
-    fun updateUser(user: UserModel):Int
+    //****************************************************************************
+    /**@methodName: checkUsernamePassword
+     * @param: userName: String
+     * @param: password: String
+     * @return: Boolean
+     * @description:This method returns a boolean based on whether a user name
+     * and password are jointly found in the database.
+     * */
+    @SuppressLint("Recycle")
+    fun checkUsernamePassword(userName: String, password: String): Boolean
     {
-        val db = this.writableDatabase
-        val contentValues = ContentValues()
-        contentValues.put("column_Email", user.email)
+        // Variable initialization and query statement
+        val myDB = this.writableDatabase
+        val selectQuery =
+            "SELECT * FROM USER_DATABASE WHERE column_Username = ? and column_Password = ?"
+        val cursor = myDB.rawQuery(selectQuery, arrayOf(userName, password))
         
-        // Update row
-        val success = db.update("USER_DATABASE",contentValues, "column_Email = ${user.email}", null)
-        db.close()
-        return success
-    }
-    fun getCursor(): Cursor
+        // Return statement
+        return (cursor.count > 0)
+    } // End checkUsernamePassword
+    
+    //****************************************************************************
+    /**@methodName: checkEmailPassword
+     * @param: email: String
+     * @param: password: String
+     * @return: Boolean
+     * @description:This method returns a boolean based on whether an email
+     * address and password are jointly found in the database.
+     * */
+    @SuppressLint("Recycle")
+    fun checkEmailPassword(email: String, password: String): Boolean
     {
-        val db = this.writableDatabase
-        val cursor: Cursor = db.rawQuery("SELECT * FROM USER_DATABASE", null)
-     
-        return cursor
-    }
+        // Variable initialization and query statement
+        val myDB = this.writableDatabase
+        val selectQuery =
+            "SELECT * FROM USER_DATABASE WHERE column_Email = ? and column_Password = ?"
+        val cursor = myDB.rawQuery(selectQuery, arrayOf(email, password))
+        
+        // Return statement
+        return (cursor.count > 0)
+    } // End checkEmailPassword
 } // End DataBaseHelper class

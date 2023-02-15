@@ -1,3 +1,10 @@
+//****************************************************************************
+/**@methodName:
+ * @param:
+ * @return:
+ * @description:
+ * */
+
 package edu.msudenver.kotlinlogin
 
 import android.content.Intent
@@ -40,6 +47,7 @@ class SignUP : AppCompatActivity()
             {
                 // Add user to database
                 val dbHelper = DataBaseHelper(this)
+                val hash = dbHelper.companion.getHash(passwordString1)
                 val user1 = UserModel(emailAddress, username1, passwordString1)
                 val success = dbHelper.addOne(user1)
                 
